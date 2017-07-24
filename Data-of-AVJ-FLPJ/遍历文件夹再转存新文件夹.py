@@ -71,7 +71,7 @@ def P_AVJ(filepath_in,filepath_out,in_date):
             l33.append(fl_no)
             l33=l33+l22[1:5]
             for i in l22[5:]:
-                if i == "Q" or i == "E" or i=="S":
+                if i == "Q" or i == "E" or i=="S"or i=="L":
                     i = " "
                 elif i=="A":
                     i="9"
@@ -175,6 +175,7 @@ def P_FLPJ(filepath_in,filepath_out,in_date):
     output.close()
 
 def All_P(A_filedir,F_filedir,out_path,in_date):
+
     out_path_A = unicode(os.path.join(out_path,"out_AVJ"), "utf8")
     if not os.path.exists(out_path_A):
         os.mkdir(out_path_A)
@@ -189,12 +190,57 @@ def All_P(A_filedir,F_filedir,out_path,in_date):
         out_dir = os.path.join(out_path_F, "out_" + os.path.basename(filedir))
         P_FLPJ(filedir, out_dir,in_date)
 
+def All_in_One(filepath):
+        # filepath = r"C:\Users\mingl\Desktop\测试处理数据\test采集7-17\\"
+        A_Dir = os.path.join(filepath, "out_AVJ").decode('utf8').encode('cp936')
+        out_A_file = os.listdir(A_Dir)
+        F_Dir = os.path.join(filepath, "out_FLPJ").decode('utf8').encode('cp936')
+        out_F_file = os.listdir(F_Dir)
+
+        A_filedir1 = []
+        F_filedir1 = []
+
+        for allDir in out_A_file:
+            child = os.path.join(A_Dir, allDir)
+            A_filedir1.append(child.decode('gbk'))
+            # print child.decode('gbk') # .decode('gbk')是解决中文显示乱码问题
+        for allDir in out_F_file:
+            child = os.path.join(F_Dir, allDir)
+            F_filedir1.append(child.decode('gbk'))
+            # print child.decode('gbk')  # .decode('gbk')是解决中文显示乱码问题
+
+        output_txt = open(os.path.join(filepath, "ALL_AVJ.txt").decode('utf8').encode('cp936'), "w")
+        for fl in A_filedir1:
+            input_txt = open(fl, "r")
+            output_txt.write(input_txt.read())
+            input_txt.close()
+        output_txt.close()
+
+        output_txt = open(os.path.join(filepath, "ALL_FLPJ.txt").decode('utf8').encode('cp936'), "w")
+        for fl in F_filedir1:
+            input_txt = open(fl, "r")
+            output_txt.write(input_txt.read())
+            input_txt.close()
+        output_txt.close()
 
 # new_dir=unicode(r"C:\Users\mingl\Desktop\测试处理数据\test采集7-17", "utf8")
 # os.mkdir(new_dir)
 Data_dir = raw_input("输入要处理文件夹的地址：")
 in_date = raw_input("输入采集日期  YYYY/MM/DD：")
-(A_filedir,F_filedir)=eachFile(Data_dir)
 
+# tt = r"(\d{4})\(\d{2})\(\d{2})"
+# list_time = re.findall(tt,in_date)
+# # if int(list_time[0])<2016 or int(list_time[0])>2030:
+# #     print "YYYY is wrong input."
+# #     os._exit()
+# # elif int(list_time[1])<1 or int(list_time[1])>12:
+# #     print "MM is wrong input."
+# #     os._exit()
+# # elif int(list_time[2]) < 1 or int(list_time[2]) > 31:
+# #     print "DD is wrong input."
+# #     os._exit()
+
+(A_filedir,F_filedir)=eachFile(Data_dir)
 All_P(A_filedir,F_filedir,Data_dir,in_date)
+All_in_One(Data_dir)
 
